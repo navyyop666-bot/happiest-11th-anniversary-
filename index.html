@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Treasure of Our Love ❤️ | Teena & Navu</title>
+
+<!-- Royal Vintage Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Great+Vibes&family=Playfair+Display:ital,wght@0,500;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    min-height: 100vh;
+    background: radial-gradient(circle at 50% 100%, #0d2c38 0%, #06151c 50%, #02070a 100%);
+    font-family: 'Playfair Display', serif;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 10px;
+}
+
+/* Ambient Fireflies */
+.dust-container {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0; overflow: hidden;
+}
+.particle {
+    position: absolute; border-radius: 50%;
+    background: radial-gradient(circle, #64ffda, rgba(100, 255, 218, 0));
+    opacity: 0.5; animation: floatUp linear infinite;
+}
+@keyframes floatUp {
+    0% { transform: translateY(105vh) scale(0.5); opacity: 0; }
+    50% { opacity: 0.8; box-shadow: 0 0 10px #64ffda; }
+    100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+}
+
+/* ================= 1. TREASURE MAP SECTION ================= */
+#map-game-section {
+    width: 100%; max-width: 550px; z-index: 2;
+    transition: all 1s cubic-bezier(0.5, 0, 0.2, 1);
+}
+
+.map-card {
+    background: url('https://www.transparenttextures.com/patterns/aged-paper.png'), linear-gradient(to bottom right, #e2c792, #c59a5c);
+    border: 8px solid #3b2011;
+    border-radius: 12px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9), inset 0 0 80px rgba(80, 40, 15, 0.7);
+    padding: 20px; position: relative; overflow: hidden;
+}
+
+.map-header { text-align: center; margin-bottom: 15px; }
+.map-title { font-family: 'Cinzel', serif; font-size: 26px; color: #4a2110; font-weight: 900; letter-spacing: 1px; text-shadow: 1px 1px 0 rgba(255,255,255,0.4); }
+.map-sub { font-family: 'Great Vibes', cursive; font-size: 24px; color: #872513; }
+
+.map-canvas-area {
+    position: relative; width: 100%; aspect-ratio: 4 / 3;
+    background: rgba(255, 255, 255, 0.15); border: 2px dashed #8b5733;
+    border-radius: 8px; margin-bottom: 20px; overflow: hidden;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+}
+
+.compass {
+    position: absolute; top: 10px; right: 10px; font-size: 35px; opacity: 0.6;
+    animation: slowSpin 15s linear infinite; pointer-events: none;
+}
+@keyframes slowSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.map-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; overflow: visible; }
+.track-line { fill: none; stroke: #5c3016; stroke-width: 1; stroke-dasharray: 2 2; opacity: 0.4; }
+.track-active { fill: none; stroke: #b1281e; stroke-width: 1.2; stroke-dasharray: 2 2; animation: dashLoop 2s linear infinite; }
+@keyframes dashLoop { from { stroke-dashoffset: 10; } to { stroke-dashoffset: 0; } }
+
+#ship {
+    position: absolute; width: 40px; height: 40px; font-size: 30px;
+    transform: translate(-50%, -50%); transition: all 1.8s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 5; filter: drop-shadow(2px 5px 4px rgba(0,0,0,0.5));
+    animation: bobbing 2s infinite ease-in-out;
+}
+@keyframes bobbing { 0%, 100% { margin-top: 0; } 50% { margin-top: -6px; } }
+
+.stop-point {
+    position: absolute; width: 35px; height: 35px; border-radius: 50%;
+    background: #3b2011; color: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 18px; border: 2px solid #ffde94; transform: translate(-50%, -50%); z-index: 3; transition: 0.5s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+.active-stop::before {
+    content: ''; position: absolute; width: 100%; height: 100%; border-radius: 50%;
+    border: 3px solid #ff3b30; animation: ripple 1.5s infinite; z-index: -1;
+}
+@keyframes ripple { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2.2); opacity: 0; } }
+.active-stop { background: #b1281e; transform: translate(-50%, -50%) scale(1.25); box-shadow: 0 0 15px #ff3b30; }
+.visited-stop { background: #2e7d32; border-color: #81c784; filter: brightness(0.8); }
+
+.quest-card {
+    background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 12px; padding: 18px; text-align: center;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+.quest-card h4 { font-family: 'Cinzel', serif; color: #3b1706; font-size: 17px; margin-bottom: 5px; font-weight: 900; }
+.quest-card p { font-size: 14px; color: #2e1405; margin-bottom: 12px; font-weight: 600; }
+
+.quest-input {
+    width: 90%; padding: 10px; border: 1.5px solid #a8794c; border-radius: 20px;
+    background: rgba(255, 255, 255, 0.9); font-size: 14px; text-align: center;
+    font-family: 'Playfair Display', serif; outline: none; transition: 0.3s;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+.quest-input:focus { border-color: #b1281e; box-shadow: 0 0 10px rgba(177, 40, 30, 0.4); }
+
+.quest-btn {
+    margin-top: 12px; padding: 10px 24px;
+    background: linear-gradient(135deg, #a72314, #731307); color: #fff;
+    border: none; border-radius: 25px; font-family: 'Cinzel', serif;
+    font-size: 12px; font-weight: bold; cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4); transition: 0.3s;
+}
+.quest-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(167, 35, 20, 0.6); }
+
+
+/* ================= 2. 3D ROYAL BOOK SECTION ================= */
+#book-section {
+    display: none; opacity: 0; transform: scale(0.7) translateY(40px);
+    transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+    width: 100%; max-width: 440px; z-index: 2;
+}
+
+.scene {
+    width: 90vw; max-width: 440px; height: 135vw; max-height: 640px;
+    perspective: 2500px; margin: 0 auto;
+}
+
+.book {
+    width: 100%; height: 100%; position: relative;
+    transform-style: preserve-3d; transition: transform 0.6s ease;
+}
+
+.page {
+    width: 100%; height: 100%; position: absolute; top: 0; left: 0;
+    transform-origin: left center; transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    transform-style: preserve-3d; cursor: pointer; box-shadow: -3px 8px 25px rgba(0, 0, 0, 0.7);
+}
+
+.front, .back {
+    width: 100%; height: 100%; position: absolute; top: 0; left: 0;
+    backface-visibility: hidden; display: flex; flex-direction: column;
+    justify-content: space-between; align-items: center;
+    padding: 30px 20px; text-align: center; border-radius: 4px 18px 18px 4px;
+}
+.back { transform: rotateY(180deg); border-radius: 18px 4px 4px 18px; }
+.flipped { transform: rotateY(-180deg); }
+
+.cover-style {
+    background: url('https://www.transparenttextures.com/patterns/black-scales.png'), linear-gradient(135deg, #330b04, #120301);
+    border: 3px solid #d4af37; box-shadow: inset 0 0 30px rgba(0,0,0,0.9), inset 0 0 10px #d4af37;
+    position: relative;
+}
+
+.wax-seal {
+    width: 75px; height: 75px; background: radial-gradient(circle at 30% 30%, #d92518, #610500);
+    border-radius: 50%; position: absolute; bottom: 25px; right: 25px;
+    box-shadow: 2px 4px 8px rgba(0,0,0,0.7), inset -2px -4px 6px rgba(0,0,0,0.5), inset 2px 2px 4px rgba(255,255,255,0.4);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Great Vibes', cursive; font-size: 30px; color: #ffc9b8;
+    text-shadow: -1px -1px 0 rgba(0,0,0,0.4), 1px 1px 0 rgba(255,255,255,0.2);
+    border: 2px solid #4a0400; z-index: 10;
+}
+
+.cover-title { font-family: 'Cinzel', serif; font-size: 32px; font-weight: 900; color: #ffd700; text-shadow: 2px 2px 8px #000; margin-top: 30px; }
+.cover-subtitle { font-family: 'Great Vibes', cursive; font-size: 28px; color: #f8e1a8; }
+
+.parchment {
+    background: #f7e6c5;
+    background-image: radial-gradient(circle at 10% 10%, rgba(139,69,19,0.08) 0%, transparent 40%), linear-gradient(to right, rgba(0,0,0,0.15) 0%, transparent 6%);
+    color: #381c08; border: 1px solid #c4a572; box-shadow: inset 0 0 40px rgba(105, 52, 12, 0.1);
+}
+.back.parchment { background-image: linear-gradient(to left, rgba(0,0,0,0.15) 0%, transparent 6%); }
+
+.script-title { font-family: 'Great Vibes', cursive; font-size: 36px; color: #8a170b; margin: 10px 0; }
+.body-content { font-size: 15px; line-height: 1.6; color: #43220b; font-weight: 500; }
+.quote-box { background: rgba(138, 23, 11, 0.08); border-left: 3px solid #8a170b; padding: 10px; border-radius: 4px; font-style: italic; font-weight: bold; font-size: 13px; }
+.treasure-glow { font-size: 65px; filter: drop-shadow(0 0 15px #ff9800); animation: pulseGlow 2s infinite; }
+@keyframes pulseGlow { 0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px #ff9800); } 50% { transform: scale(1.15); filter: drop-shadow(0 0 30px #ff3300); } }
+
+.controls { margin-top: 20px; display: flex; justify-content: center; z-index: 10; }
+.nav-btn {
+    background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px);
+    color: #fce8be; border: 1px solid #d4af37; padding: 10px 22px; border-radius: 25px;
+    font-family: 'Cinzel', serif; font-size: 12px; font-weight: bold; cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6); transition: 0.3s; margin: 0 10px;
+}
+.nav-btn:hover { background: rgba(212, 175, 55, 0.3); transform: translateY(-2px); }
+
+</style>
+</head>
+<body>
+
+<!-- Deep Sea Fireflies -->
+<div class="dust-container" id="dust"></div>
+
+<!-- ================= 1. TREASURE MAP GAME ================= -->
+<div id="map-game-section">
+    <div class="map-card">
+        <div class="compass">🧭</div>
+        <div class="map-header">
+            <h2 class="map-title">🗺️ Isle of Memories</h2>
+            <div class="map-sub">Sail to find your treasure ❤️</div>
+        </div>
+        
+        <div class="map-canvas-area">
+            <svg class="map-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <path class="track-line" d="M 15 20 Q 50 10 75 25 T 30 70 Q 60 90 85 80" />
+            </svg>
+            <div id="ship" style="left: 15%; top: 20%;">⛵</div>
+            
+            <div class="stop-point active-stop" id="stop1" style="left: 15%; top: 20%;">⚓</div>
+            <div class="stop-point" id="stop2" style="left: 75%; top: 25%;">🏝️</div>
+            <div class="stop-point" id="stop3" style="left: 30%; top: 70%;">💌</div>
+            <div class="stop-point" id="stop4" style="left: 85%; top: 80%;">🗝️</div>
+        </div>
+
+        <div class="quest-card">
+            <h4 id="qTitle">Island 1: The Harbor of First Sight</h4>
+            <p id="qText">Aap mujhe pyaar se kya bulana pasand karti hain?</p>
+            <input type="text" id="qInput" class="quest-input" placeholder="Type here meri jaan..." autocomplete="off">
+            <br>
+            <button class="quest-btn" onclick="advanceShip()">Sail to Next Island ➔</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- ================= 2. 3D BOOK OF LOVE ================= -->
+<div id="book-section">
+    <div class="scene">
+        <div class="book" id="book">
+            
+            <!-- Page 5 (Treasure Reveal) -->
+            <div class="page" id="p5" style="z-index: 1;">
+                <div class="front parchment">
+                    <div class="treasure-glow" style="margin-top: 15px;">💎👑❤️</div>
+                    <div class="script-title">You Are My Treasure</div>
+                    <p class="body-content">Is poori duniya mein aapse badhkar na koi heera hai, na koi daulat.</p>
+                    <div class="quote-box">"11 Months completed... and I choose you in every lifetime."</div>
+                    <p class="body-content" style="font-weight: 900; color: #a72314; font-size: 16px; margin-top: 15px;">
+                        Happy 11th Month Anniversary, Mrs. Teena Soni ji! 🥹❤️
+                    </p>
+                    <div style="font-family: 'Cinzel', serif; font-weight: 900; color: #5a1e12; margin-top: 15px;">— YOURS, NAVUDDIN</div>
+                </div>
+                <div class="back cover-style">
+                    <div class="wax-seal" style="bottom: auto; right: auto; margin: 40px auto;">T&N</div>
+                    <div class="cover-title" style="font-size: 22px;">Forever & Always</div>
+                    <div class="cover-subtitle" style="font-size: 26px;">Teena & Navuddin</div>
+                    <p style="color: #c9a050; font-size: 13px; margin-top: 15px;">The map ends, but our love is eternal. ❤️</p>
+                </div>
+            </div>
+
+            <!-- Page 4 -->
+            <div class="page" id="p4" style="z-index: 2;">
+                <div class="front parchment">
+                    <div class="script-title">My 11 Promises</div>
+                    <p class="body-content" style="text-align: left; padding: 0 5px;">
+                        1. Aapka har gussa ko pyar se takel karuga.<br>
+                        2. Bina kahe aapki baatein samajhunga.<br>
+                        3. Zindagi bhar aapka haath thaame rakhunga.<br>
+                        4. Aapki sari baate manuga.<br>
+                      
+                       🧿🧿🧿🧿🧿🧿🧿🧿🧿🧿🧿🧿
+                        5. Roz pehle se bhi zyaada pyar karunga.
+                    </p>
+                    <div class="quote-box">"Aap meri aadat nahi, meri rooh ban chuki ho."</div>
+                </div>
+                <div class="back parchment">
+                    <div class="script-title">The Secret Key</div>
+                    <div style="font-size: 45px; margin: 5px 0;">🗝️</div>
+                    <p class="body-content">Map par saare raaz khul gaye... par kya aapko pata hai mere dil ka sabse anmol treasure kya hai?</p>
+                    <div class="quote-box" style="color: #000;">"Turn the final page to open the chest!"</div>
+                </div>
+            </div>
+
+            <!-- Page 3 -->
+            <div class="page" id="p3" style="z-index: 3;">
+                <div class="front parchment">
+                    <div class="script-title">11 Months of Us</div>
+                    <div style="font-size: 35px; margin: 5px 0;">✨💌</div>
+                    <p class="body-content">In 11 mahinon mein banayi hui har yaad meri zindagi ka sabse khoobsurat hissa hai.</p>
+                    <div class="quote-box">"Aapki ek muskaan mera poora din bana deti hai."</div>
+                </div>
+                <div class="back parchment">
+                    <div class="script-title">Sweet Chaos</div>
+                    <p class="body-content">Woh choti choti baaton pe ladna, aapka naraz hona aur mera aapko pyar se manana...</p>
+                    <div class="quote-box">"Aap mere jeene ki sabse pyari wajah ho."</div>
+                </div>
+            </div>
+
+            <!-- Page 2 -->
+            <div class="page" id="p2" style="z-index: 4;">
+                <div class="front cover-style" style="background: linear-gradient(135deg, #2b0b04, #120301);">
+                    <div style="font-size: 40px; margin-top: 25px;">📜</div>
+                    <div class="cover-title" style="font-size: 24px;">Royal Decree</div>
+                    <p style="color: #ebd08d; font-size: 14px; margin-top: 15px;">Only the Queen of Navuddin's Heart may read further.</p>
+                    <div style="font-family: 'Cinzel'; color:#c9a050; margin-top: 25px; font-size: 12px; animation: pulseHint 1.5s infinite;">Tap to unlock ➔</div>
+                </div>
+                <div class="back parchment">
+                    <div class="script-title" style="font-size: 38px; margin-top: 15px;">Mrs. Teena Soni ji</div>
+                    <div style="font-size: 30px; margin: 5px 0;">👑❤️</div>
+                    <p class="body-content">Meri jaan, meri biwi ke naam. Ye diary hamare 11 mahino ke pyar ka saboot hai.</p>
+                    <div class="quote-box">"Har saans ke sath aapka shukriya."</div>
+                </div>
+            </div>
+
+            <!-- Page 1 -->
+            <div class="page" id="p1" style="z-index: 5;">
+                <div class="front cover-style">
+                    <div class="wax-seal">T&N</div>
+                    <div style="font-size: 45px; margin-top: 25px;">👑</div>
+                    <div class="cover-title">The Book of Us</div>
+                    <div class="cover-subtitle">11 Months of Love</div>
+                    <p style="color: #eed69d; font-size: 14px; margin-top: 15px; font-style: italic;">"A timeless diary discovered on Treasure Island."</p>
+                    <div style="font-family: 'Cinzel'; color:#c9a050; margin-top: 25px; font-size: 12px; animation: pulseHint 1.5s infinite;">Tap to Open ✨</div>
+                </div>
+                <div class="back parchment">
+                    <div class="script-title">The Eternal Diary</div>
+                    <p class="body-content">Samundar ke saare raaz paar karke aap yahan tak aayi hain... Aaiye ab hamare pyar ke panne paltein!</p>
+                    <div class="quote-box">"Ready ho in yaadon ko wapas jeene ke liye?"</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+        <button class="nav-btn" onclick="prevPage()">⟵ Previous</button>
+        <button class="nav-btn" onclick="nextPage()">Next ⟶</button>
+    </div>
+</div>
+
+<script>
+/* Global functions defined immediately to prevent ReferenceError */
+const shipCoords = [
+    { left: '15%', top: '20%' }, { left: '75%', top: '25%' },
+    { left: '30%', top: '70%' }, { left: '85%', top: '80%' }
+];
+const quests = [
+    { title: "Island 1: The Start", text: "Aap mujhe pyaar se kya bulana pasand karti hain?", placeholder: "Navu? Ya kuch aur..." },
+    { title: "Island 2: The Lagoon of Laughs", text: "Jab hum ladte hain, toh hamesha pehle kon maanta hai?", placeholder: "Sach likhna..." },
+    { title: "Island 3: Whispering Bay", text: "Inn 11 mahino mein aapki sabse favourite memory konsi hai?", placeholder: "Write from your heart..." },
+    { title: "Island 4: The Treasure Cove 💎", text: "Aapke hisaab se mera sabse bada treasure kya hai?", placeholder: "Final answer..." }
+];
+
+let currentStop = 0;
+
+function advanceShip() {
+    const input = document.getElementById('qInput');
+    if (!input.value.trim()) { alert("Bina answer likhe ship aage nahi badhegi! ❤️"); input.focus(); return; }
+
+    confetti({ particleCount: 30, spread: 60, origin: { y: 0.6 } });
+    
+    document.getElementById('stop' + (currentStop + 1)).classList.replace('active-stop', 'visited-stop');
+    currentStop++;
+
+    if (currentStop < 4) {
+        let ship = document.getElementById('ship');
+        ship.style.left = shipCoords[currentStop].left;
+        ship.style.top = shipCoords[currentStop].top;
+        document.getElementById('stop' + (currentStop + 1)).classList.add('active-stop');
+        
+        document.getElementById('qTitle').innerText = quests[currentStop].title;
+        document.getElementById('qText').innerText = quests[currentStop].text;
+        input.placeholder = quests[currentStop].placeholder;
+        input.value = '';
+    } else {
+        triggerCinematicTransition();
+    }
+}
+
+function triggerCinematicTransition() {
+    const mapSec = document.getElementById('map-game-section');
+    const bookSec = document.getElementById('book-section');
+
+    mapSec.style.transform = 'scale(1.1) translateY(-30px)';
+    mapSec.style.opacity = '0';
+    mapSec.style.filter = 'blur(10px)';
+    
+    setTimeout(() => {
+        mapSec.style.display = 'none';
+        bookSec.style.display = 'block';
+        
+        setTimeout(() => {
+            bookSec.style.opacity = '1';
+            bookSec.style.transform = 'scale(1) translateY(0)';
+            confetti({ particleCount: 80, spread: 80, origin: { y: 0.4 }, colors: ['#ffd700'] });
+        }, 50);
+    }, 1000);
+}
+
+const pages = [ document.getElementById('p1'), document.getElementById('p2'), document.getElementById('p3'), document.getElementById('p4'), document.getElementById('p5') ];
+let currentBookIndex = 0;
+
+function updateZIndices() {
+    pages.forEach((page, index) => {
+        if (index < currentBookIndex) { 
+            page.style.zIndex = index + 1;
+        } else { 
+            page.style.zIndex = (pages.length - index) + 10;
+        }
+    });
+}
+
+function nextPage() {
+    if (currentBookIndex < pages.length) {
+        pages[currentBookIndex].classList.add('flipped');
+        currentBookIndex++;
+        updateZIndices();
+        if (currentBookIndex === 5) setTimeout(megaCelebrate, 800);
+    }
+}
+
+function prevPage() {
+    if (currentBookIndex > 0) {
+        currentBookIndex--;
+        pages[currentBookIndex].classList.remove('flipped');
+        updateZIndices();
+    }
+}
+
+pages.forEach((page, idx) => {
+    page.addEventListener('click', () => {
+        if (idx === currentBookIndex) nextPage();
+        else if (idx === currentBookIndex - 1) prevPage();
+    });
+});
+
+function megaCelebrate() {
+    const end = Date.now() + 4000;
+    const colors = ['#ffd700', '#ff0033', '#ffffff', '#ff9999'];
+    (function frame() {
+        confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: colors });
+        confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: colors });
+        if (Date.now() < end) requestAnimationFrame(frame);
+    }());
+}
+
+/* Ambient Fireflies */
+const dustContainer = document.getElementById('dust');
+for(let i=0; i<25; i++) {
+    let p = document.createElement('div');
+    p.className = 'particle';
+    let size = Math.random() * 5 + 2;
+    p.style.width = size + 'px'; p.style.height = size + 'px';
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.animationDuration = (Math.random() * 10 + 5) + 's';
+    p.style.animationDelay = (Math.random() * 5) + 's';
+    dustContainer.appendChild(p);
+}
+
+updateZIndices();
+</script>
+</body>
+</html>
